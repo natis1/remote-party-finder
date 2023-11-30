@@ -3,7 +3,7 @@
 
     const state = {
         allowed: [],
-        centre: 'All',
+        centre: [ 'All' ],
         list: null,
         lang: null,
     };
@@ -59,7 +59,14 @@
         }
 
         let dataCentre = document.getElementById('data-centre-filter');
-        dataCentre.value = state.centre;
+        for (let option of dataCentre.options) {
+            if (stateWasNull) {
+                console.log('was null');
+                state.centre.push(option.value);
+            }
+
+            option.selected = state.centre.includes(option.value);
+        }
 
         let language = document.getElementById('language');
         if (state.lang === null) {
@@ -94,7 +101,7 @@
         }
 
         function dataCentreFilter(item) {
-            return state.centre === "All" || state.centre === item.values().centre;
+            return state.centre.includes('All') || state.centre.includes(item.values().centre);
         }
 
         state.list.filter(item => dataCentreFilter(item) && categoryFilter(item));
@@ -115,7 +122,6 @@
 
         for (let opt of select.options) {
             let centre = opt.value;
-
             let count = 0;
 
             if (dataCentres.hasOwnProperty(centre)) {
@@ -130,7 +136,18 @@
         }
 
         select.addEventListener('change', () => {
-            state.centre = select.value;
+            let centre = [];
+
+            for (let option of select.options) {
+                if (!option.selected) {
+                    continue;
+                }
+
+                let category = option.value;
+                centre.push(category);
+            }
+
+            state.centre = centre;
             refilter();
         });
     }
